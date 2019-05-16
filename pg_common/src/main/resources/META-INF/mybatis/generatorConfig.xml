@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+	<!-- 友情提示  : 该工具是通过  maven-mybatis 插件自动生成想对应的model / mapper     -->
+   <!-- 生成代码的命令 :   mybatis-generator:generate -->
+   <!-- 参考  url :https://gitee.com/free/Mapper/blob/master/wiki/mapper3/7.UseMBG.md 	 -->
+<generatorConfiguration>
+  <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    
+    <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+      <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+      <!-- caseSensitive默认false，当数据库表名区分大小写时，可以将该属性设置为true -->
+      <property name="caseSensitive" value="false"/>
+    </plugin>
+
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                    connectionURL="jdbc:mysql://localhost:3306/erpdb"
+                    userId="root"
+                    password="root">
+    </jdbcConnection>
+
+    <javaModelGenerator targetPackage="${targetModelPackage}" targetProject="${targetJavaProject}"/>
+		
+	<sqlMapGenerator targetPackage="${targetXMLPackage}"  targetProject="${targetResourcesProject}"/>
+		
+	<javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}" type="XMLMAPPER" />
+
+<!--     <table tableName="CUSTOMER" > -->
+<!--       <generatedKey column="CUS_CODE" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_CUS_ROLE_MAPPING" > -->
+<!--       <generatedKey column="ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_MENU" > -->
+<!--       <generatedKey column="MENU_ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_PROG_MENU_ROLE" > -->
+<!--       <generatedKey column="ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_PROG" > -->
+<!--       <generatedKey column="PROG_ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_ROLE" > -->
+<!--       <generatedKey column="ROLE_ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+<!--     <table tableName="ERP_ROLE_PROG_MAPPING" > -->
+<!--       <generatedKey column="ID" sqlStatement="Mysql" identity="true"/> -->
+<!--     </table> -->
+    
+  </context>
+</generatorConfiguration>

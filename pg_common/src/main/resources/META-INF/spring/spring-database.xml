@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 数据源定义 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <property name="filters" value="stat"/>
+
+        <property name="maxActive" value="20"/>
+        <property name="initialSize" value="1"/>
+        <property name="maxWait" value="60000"/>
+        <property name="minIdle" value="1"/>
+
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/> 
+	</bean>
+	
+		<!-- 
+		#连接池的最大数据库连接数，设为0表示无限制。  
+		dipatch.jdbc.maxActive=40  
+		#数据库连接的最大空闲时间。超过此空闲时间，数据库连接将被标记为不可用，然后被释放。设为0表示无限制。  
+		dipatch.jdbc.maxIdle=30  
+		#最大建立连接等待时间。如果超过此时间将接到异常。设为－1表示无限制。  
+		dipatch.jdbc.maxWait=10000  
+		dipatch.jdbc.defaultAutoCommit=true  
+		#回收被遗弃的（一般是忘了释放的）数据库连接到连接池中。  
+		dipatch.jdbc.removeAbandoned=true  
+		# 数据库连接过多长时间不用将被视为被遗弃而收回连接池中。  
+		dipatch.jdbc.removeAbandonedTimeout=30  
+		# 将被遗弃的数据库连接的回收记入日志。   
+		dipatch.jdbc.logAbandoned=true  
+			
+			 -->
+
+     <!-- 配置jdbcTemplate 注入容器,方便使用 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name = "dataSource" ref="dataSource" />
+    </bean>
+</beans>

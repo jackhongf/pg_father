@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+    <beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:schemaLocation=" 
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"> 
+     
+        <description>apache shiro配置</description> 
+        <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean"> 
+            <property name="securityManager" ref="securityManager"/> 
+           <!--   <property name="loginUrl" value="/login"/> 
+            <property name="successUrl" value="/"/> 
+            <property name="unauthorizedUrl" value="/page/401"/>
+            -->
+            <property name="filterChainDefinitions"> 
+                <value> 
+                    <!-- 静态资源允许访问 --> 
+                    /app/** = anon 
+                    /assets/** = anon 
+                    / = anon
+                    <!-- 登录页允许访问 --> 
+                    /rest/user/login = anon 
+                    <!-- 其他资源需要认证 --> 
+                    /** = authc 
+                </value> 
+            </property> 
+        </bean> 
+        <!-- 安全管理器 --> 
+        <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager"> 
+         	 <property name="realms" ref="sampleRealm" />   
+        <!-- sessionManager -->
+    		<property name="sessionManager" ref="sessionManager" />
+
+	    <!-- cacheManager -->
+		    <property name="cacheManager" ref="cacheManager" />
+		            <!-- cacheManager,集合spring缓存工厂 --> 
+		            <!-- <property name="cacheManager" ref="shiroEhcacheManager" /> --> 
+		            <!-- <property name="sessionManager" ref="sessionManager" /> --> 
+		    </bean> 
+	     
+	    <!-- Shiro生命周期处理器 --> 
+	    	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/> 
+
+		<!-- shiro redisManager -->
+			<bean id="redisManager" class="org.crazycake.shiro.RedisManager">
+			    <property name="host" value="127.0.0.1"/>
+			    <property name="port" value="6379"/>
+			    <property name="expire" value="1800"/>
+			    <property name="password" value="123456"/>
+			    <!-- optional properties:
+			    <property name="timeout" value="10000"/>
+			    <property name="password" value="123456"/>
+			    -->
+			</bean>
+
+		<!-- redisSessionDAO -->
+			<bean id="redisSessionDAO" class="org.crazycake.shiro.RedisSessionDAO">
+			    <property name="redisManager" ref="redisManager" />
+			</bean>
+
+		<!-- sessionManager -->
+			<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+			    <property name="sessionDAO" ref="redisSessionDAO" />
+			</bean>
+
+		<!-- cacheManager -->
+			<bean id="cacheManager" class="org.crazycake.shiro.RedisCacheManager">
+			    <property name="redisManager" ref="redisManager" />
+			</bean>
+     
+	      <bean id="sampleRealm" class="org.apache.shiro.realm.jdbc.JdbcRealm">
+	      <!-- 这里是配置的简单shiro验证方式, 正式环境需要自己实现 shiro的验证方法--> 
+	        <property name="dataSource" ref="dataSource" /> 
+	        <property name="authenticationQuery" 
+	            value="select t.password from `user` t where t.username = ?" /> 
+	        <property name="userRolesQuery" 
+	            value="SELECT a.role_name FROM  user_role t LEFT JOIN role a ON  t.role_id = a.id WHERE t.user_id = (SELECT id FROM `user` u WHERE u.username = ? ) " /> 
+	        <property name="permissionsQuery" 
+	            value="SELECT b.permission_name FROM role t LEFT JOIN role_permission a ON t.id = a.role_id LEFT JOIN permission b ON a.permission_id = b.id WHERE t.role_name = ? " /> 
+	        <property name="permissionsLookupEnabled" value="true" /> 
+	        <property name="saltStyle" value="NO_SALT" /> 
+	        <!-- <property name="credentialsMatcher" ref="hashedCredentialsMatcher" />  -->
+	    </bean> 
+    <!--
+   
+    <bean id="hashedCredentialsMatcher" 
+        class="org.apache.shiro.authc.credential.HashedCredentialsMatcher"> 
+            <property name="hashAlgorithmName" value="MD5" /> 
+            <property name="storedCredentialsHexEncoded" value="true" /> 
+            <property name="hashIterations" value="1" /> 
+    </bean> 
+     -->
+    </beans> 
+ <!--
+下方注释掉的property name="credentialsMatcher" ref="hashedCredentialsMatcher
+"
+代表使用验证的机制，再下方是定义
+bean id="hashedCredentialsMatcher"         class="org.apache.shiro.authc.credential.HashedCredentialsMatcher
+将此部分注释掉后，代可以使用明码的密码进行数据访问
+例如用户名test1  密码123456 ，而不是配置中的MD5进行加密后的验证。
+上方的salt现在设为不用，正式项目中需要使用。
+另外为了验证配置，使用的是jdbcrealm直接访问数据库，正式项目中就别偷懒了，需要自己实现shiro的验证方法。 -->
